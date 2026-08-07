@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Moonward Adventure 2026</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background-color: #251b8a;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Microsoft JhengHei';
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* 防止 vw 造成不必要的水平卷軸 */
+  }
+  ::selection {
+    background: #ffffff;
+    color: #5955c6; /* 可選，設定選取文字的顏色 */
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Hero Section */
+  .hero {
+    position: relative;
+    width: 100%;
+    padding-top: 85%;
+    margin-bottom: 20px;
+  }
+  .hero img {
+    position: absolute;
+    object-fit: contain;
+  }
+
+  /* Animations */
+  @keyframes inkRender {
+    0% { opacity: 0; filter: blur(20px) contrast(1.5); transform: scale(0.95); }
+    50% { opacity: 0.8; filter: blur(5px) contrast(1.2); }
+    100% { opacity: 1; filter: blur(0) contrast(1); transform: scale(1); }
+  }
+  @keyframes popBounce {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    80% { transform: scale(0.95); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes continuousBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+  
+  /* 標題彈跳動畫 (Bounce) */
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-15px); }
+    60% { transform: translateY(-5px); }
+  }
+
+  /* Hero Elements */
+  .bg-img {
+    top: 0; left: 0; width: 100%; height: 100%;
+    animation: inkRender 2.5s ease-out forwards;
+  }
+  .img-A-wrapper {
+    position: absolute; top: 10%; left: 20%; width: 60%; height: 60%;
+    animation: popBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    opacity: 0; animation-delay: 0.5s;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .img-A { width: 100%; height: 100%; animation: spin 20s linear infinite; position: static !important; }
+  
+  .img-B { top: 12%; left: 10%; width: 25%; animation: popBounce 0.6s forwards; opacity: 0; animation-delay: 0.8s; }
+  .img-C { top: 10%; right: 10%; width: 30%; animation: popBounce 0.6s forwards; opacity: 0; animation-delay: 1.0s; }
+  .img-D { bottom: 12%; left: 15%; width: 18%; animation: popBounce 0.6s forwards; opacity: 0; animation-delay: 1.2s; }
+  .img-E { bottom: 15%; left: 35%; width: 15%; animation: popBounce 0.6s forwards; opacity: 0; animation-delay: 1.4s; }
+  .img-F { bottom: 12%; right: 32%; width: 15%; animation: popBounce 0.6s forwards; opacity: 0; animation-delay: 1.6s; }
+  .img-G { bottom: 10%; right: 8%; width: 28%; animation: popBounce 0.6s forwards; opacity: 0; animation-delay: 1.8s; }
+
+  .img-H-wrapper {
+    position: absolute; top: 25%; left: 20%; width: 60%;
+    animation: popBounce 0.6s forwards; opacity: 0; animation-delay: 2.0s;
+  }
+  .img-H { width: 100%; height: auto; animation: continuousBounce 2s ease-in-out infinite; position: static !important; }
+
+  /* Typography */
+  .event-header { text-align: center; margin-top: -10px; }
+  .date-time { font-size: 3em; font-weight: bold; margin-bottom: 30px; letter-spacing: 1px; font-family: "Gen Jyuu Gothic", "Noto Sans TC", sans-serif;
+   }
+  .subtitle { font-size: 0.9em; margin-bottom: 15px; font-weight: bold; }
+  .desc { font-size: 0.8em; line-height: 1.6; color: #ffffff; }
+
+  /* Crafts Section - Grid Layout */
+  .crafts-container { 
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 40px 0;
+  }
+  .craft-card {
+    background: #fff; border-radius: 12px;
+    text-align: center; color: #fff;
+    position: relative; border: 3px solid #f8f6fc;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    width: 100%;
+  }
+  
+  .card-header {
+    padding: 12px 5px; font-size: 0.9em; line-height: 1.3; font-weight: bold; border-radius: 8px 8px 0 0;
+  }
+  .header-1 { background-color: #8b85e0; }
+  .header-2 { background-color: #ea729e; }
+  .header-3 { background-color: #26a69a; }
+  .header-4 { background-color: #f0a73b; }
+
+  .card-img-placeholder { width: 100%; height: 120px; background: #e0e0e0; border-radius: 0 0 8px 8px; }
+
+  /* Section Title 加上自訂樣式與 bounce 動畫 */
+  .section-title { 
+    font-family: "Gen Jyuu Gothic", "Noto Sans TC", sans-serif;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
+    color: rgb(200, 206, 254);
+    margin: 30px 0px;
+    letter-spacing: 2px;
+    animation: 1.5s ease 0s infinite normal none running bounce;
+  }
+  
+  /* Info Grid */
+  .info-grid { display: flex; justify-content: space-between; text-align: center; gap: 15px; flex-wrap: wrap; }
+  .info-item { flex: 1; min-width: 150px; }
+  .info-item h4 { margin: 0 0 8px 0; font-size: 1em; }
+  .info-item p { margin: 0 0 12px 0; font-size: 0.85em; font-weight: bold; color: #e2dff0; }
+  .info-item small { font-size: 0.75em; color: #ccc; line-height: 1.5; display: block; }
+
+  /* Schedule */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .schedule-group {
+    border-radius: 12px;
+    padding: 15px 15px 20px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .schedule-title-card { 
+    text-align: center;
+    color: #ffffff;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin: 5px 0;
+  }
+  
+  .schedule-title-en {
+    display: block;
+    font-size: 0.7em;
+    font-weight: normal;
+    margin-top: 5px;
+    opacity: 0.9;
+  }
+
+  .schedule-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  
+  .group-1 { background-color: #7b94f8; }
+  .group-1 .time { color: #7b94f8; font-weight: bold; font-size: 0.95em; margin-bottom: 5px; }
+
+  .group-2 { background-color: #ea729e; }
+  .group-2 .time { color: #ea729e; font-weight: bold; font-size: 0.95em; margin-bottom: 5px; }
+
+  .group-3 { background-color: #26a69a; }
+  .group-3 .time { color: #26a69a; font-weight: bold; font-size: 0.95em; margin-bottom: 5px; }
+
+  .group-4 { background-color: #f0a73b; }
+  .group-4 .time { color: #f0a73b; font-weight: bold; font-size: 0.95em; margin-bottom: 5px; }
+
+  .schedule-card .activity { font-size: 1em; font-weight: bold; }
+  .schedule-card .en { font-size: 0.85em; color: #888; font-weight: normal; margin-top: 2px; margin-bottom: 8px; }
+
+  /* RWD */
+  @media (max-width: 600px) {
+    .crafts-container { grid-template-columns: repeat(2, 1fr); }
+    .info-grid { flex-direction: column; gap: 30px; }
+    .schedule-grid { grid-template-columns: 1fr; }
+    .date-time {
+    font-size: 2em;
+  }
+  }
+  
+  /* Firefly Overlay (Full Page) */
+  .fireflies-container {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; 
+    z-index: 9999; 
+  }
+
+  .firefly {
+    position: absolute;
+    background-color: #fff3a0; 
+    border-radius: 50%;
+    opacity: 0;
+    box-shadow: 0 0 10px 2px #ffe600;
+    filter: blur(1px);
+  }
+
+  /* Firefly Animation Keyframes */
+  @keyframes fade {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+  }
+  @keyframes fly1 {
+    0% { transform: translate3d(10vw, 90vh, 0) scale(1); }
+    25% { transform: translate3d(40vw, 50vh, 0) scale(1.2); }
+    50% { transform: translate3d(70vw, 80vh, 0) scale(1); }
+    75% { transform: translate3d(90vw, 30vh, 0) scale(1.2); }
+    100% { transform: translate3d(10vw, 90vh, 0) scale(1); }
+  }
+  @keyframes fly2 {
+    0% { transform: translate3d(90vw, 10vh, 0) scale(1.2); }
+    33% { transform: translate3d(60vw, 40vh, 0) scale(1); }
+    66% { transform: translate3d(30vw, 70vh, 0) scale(1.2); }
+    100% { transform: translate3d(90vw, 10vh, 0) scale(1.2); }
+  }
+  @keyframes fly3 {
+    0% { transform: translate3d(50vw, 50vh, 0) scale(1); }
+    20% { transform: translate3d(10vw, 10vh, 0) scale(0.8); }
+    40% { transform: translate3d(90vw, 10vh, 0) scale(1.2); }
+    60% { transform: translate3d(90vw, 90vh, 0) scale(1); }
+    80% { transform: translate3d(10vw, 90vh, 0) scale(1.2); }
+    100% { transform: translate3d(50vw, 50vh, 0) scale(1); }
+  }
+  @keyframes fly4 {
+    0% { transform: translate3d(5vw, 50vh, 0) scale(1.2); }
+    25% { transform: translate3d(50vw, 5vh, 0) scale(1); }
+    50% { transform: translate3d(95vw, 50vh, 0) scale(1.2); }
+    75% { transform: translate3d(50vw, 95vh, 0) scale(1); }
+    100% { transform: translate3d(5vw, 50vh, 0) scale(1.2); }
+  }
+
+  .fly1 { animation: fly1 25s linear infinite, fade 10s ease-in-out infinite; }
+  .fly2 { animation: fly2 30s linear infinite, fade 12s ease-in-out infinite; }
+  .fly3 { animation: fly3 35s linear infinite, fade 8s ease-in-out infinite; }
+  .fly4 { animation: fly4 20s linear infinite, fade 10s ease-in-out infinite; }
+
+  .delay1 { animation-delay: 2s; }
+  .delay2 { animation-delay: 5s; }
+  .delay3 { animation-delay: 8s; }
+  .delay4 { animation-delay: 1s; }
+
+  .size1 { width: 3px; height: 3px; }
+  .size2 { width: 5px; height: 5px; box-shadow: 0 0 15px 3px #ffe600; }
+
+  /* 點點星光效果 */
+  .stars-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .star {
+    position: absolute;
+    background-color: #ffffff;
+    border-radius: 50%;
+    opacity: 0.2;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.1; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 6px 2px rgba(255,255,255,0.8); }
+  }
+
+  .twinkle-1 { animation: twinkle 2s infinite alternate; }
+  .twinkle-2 { animation: twinkle 3s infinite alternate 0.5s; }
+  .twinkle-3 { animation: twinkle 2.5s infinite alternate 1s; }
+  .twinkle-4 { animation: twinkle 4s infinite alternate 1.5s; }
+
+  .site-footer {
+    padding: 20px 10px;
+    text-align: center;
+    font-size: 14px;
+    color: #ffffff;
+    border-top: 1px solid #ddd;
+    margin-top: 60px;
+  }
+
+  .footer-content p {
+    margin: 5px 0;
+  }
+
+  /* Form Styles */
+  .section-header {
+    margin-top: 60px;
+    margin-bottom: 30px;
+  }
+  .divider {
+    border: 0;
+    height: 1px;
+    background: #ffffff;
+    width: 50px;
+    margin: 10px auto;
+  }
+
+  .signup-form {
+    background-color: #ffffff;
+    color: #333333;
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 40px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+
+  .signup-form label {
+    font-size: 1rem;
+    font-weight: normal;
+    margin-bottom: 8px;
+    color: #111111;
+  }
+
+  .signup-form input {
+    padding: 12px 15px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 25px;
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+
+  .signup-form input:focus {
+    border-color: #5b54b6;
+  }
+
+  .signup-form input::placeholder {
+    color: #999999;
+  }
+
+  .qr-container {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .qr-container img {
+    width: 130px;
+    height: 130px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .fee-text {
+    color: #5b54b6;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-align: center;
+    margin: 15px 0 30px 0;
+  }
+
+  .signup-form button {
+    background: linear-gradient(90deg, #8ad4f8, #f3b6bc);
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 40px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    cursor: pointer;
+    align-self: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .signup-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- 全螢幕的螢火蟲層 -->
+<div class="fireflies-container">
+  <div class="firefly fly1 delay1 size1"></div>
+  <div class="firefly fly2 delay2 size2"></div>
+  <div class="firefly fly3 delay3 size1"></div>
+  <div class="firefly fly4 delay4 size1"></div>
+  <div class="firefly fly1 delay4 size2"></div>
+  <div class="firefly fly2 delay1 size1"></div>
+  <div class="firefly fly3 delay2 size1"></div>
+  <div class="firefly fly4 delay3 size2"></div>
+  <div class="firefly fly1 delay2 size1"></div>
+  <div class="firefly fly2 delay4 size1"></div>
+  <div class="firefly fly3 delay1 size2"></div>
+  <div class="firefly fly4 delay2 size1"></div>
+  <div class="firefly fly1 delay3 size1"></div>
+  <div class="firefly fly2 delay2 size2"></div>
+  <div class="firefly fly3 delay4 size1"></div>
+  <div class="firefly fly4 delay1 size1"></div>
+  <div class="firefly fly1 delay4 size2"></div>
+  <div class="firefly fly2 delay3 size1"></div>
+  <div class="firefly fly3 delay2 size1"></div>
+  <div class="firefly fly4 delay1 size2"></div>
+</div>
+
+<div class="container">
+  
+  <!-- Hero Section with Animations -->
+  <div class="hero">
+    <img src="bg.png" class="bg-img" alt="Background">
+    
+    <!-- 點點星光層 -->
+    <div class="stars-container">
+      <div class="star twinkle-1" style="top: 8%; left: 15%; width: 3px; height: 3px;"></div>
+      <div class="star twinkle-2" style="top: 25%; left: 80%; width: 2px; height: 2px;"></div>
+      <div class="star twinkle-3" style="top: 15%; left: 45%; width: 4px; height: 4px;"></div>
+      <div class="star twinkle-4" style="top: 40%; left: 20%; width: 2px; height: 2px;"></div>
+      <div class="star twinkle-1" style="top: 12%; left: 88%; width: 3px; height: 3px;"></div>
+      <div class="star twinkle-2" style="top: 55%; left: 12%; width: 2px; height: 2px;"></div>
+      <div class="star twinkle-3" style="top: 30%; left: 65%; width: 3px; height: 3px;"></div>
+      <div class="star twinkle-4" style="top: 65%; left: 85%; width: 4px; height: 4px;"></div>
+      <div class="star twinkle-1" style="top: 80%; left: 25%; width: 3px; height: 3px;"></div>
+      <div class="star twinkle-2" style="top: 75%; left: 60%; width: 2px; height: 2px;"></div>
+      <div class="star twinkle-3" style="top: 50%; left: 90%; width: 2px; height: 2px;"></div>
+      <div class="star twinkle-4" style="top: 20%; left: 30%; width: 3px; height: 3px;"></div>
+      <div class="star twinkle-1" style="top: 45%; left: 5%; width: 2px; height: 2px;"></div>
+      <div class="star twinkle-2" style="top: 5%; left: 70%; width: 3px; height: 3px;"></div>
+      <div class="star twinkle-3" style="top: 85%; left: 80%; width: 4px; height: 4px;"></div>
+    </div>
+
+    <div class="img-A-wrapper">
+      <img src="A_moon.png" class="img-A" alt="Moon">
+    </div>
+    
+    <img src="B_chang'e.png" class="img-B" alt="Chang'e">
+    <img src="C_wugang.png" class="img-C" alt="Wu Gang">
+    <img src="D_rabbit.png" class="img-D" alt="Rabbit">
+    <img src="E_mooncake.png" class="img-E" alt="Mooncake">
+    <img src="F_Frog.png" class="img-F" alt="Frog">
+    <img src="G_Kaguya.png" class="img-G" alt="Kaguya">
+    
+    <div class="img-H-wrapper">
+      <img src="H_title.png" class="img-H" alt="Title">
+    </div>
+  </div>
+
+  <!-- Event Details -->
+  <div class="event-header">
+    <!-- 修改此處：套用四種顏色的日期與時間 -->
+    <p class="date-time">
+      <span style="color: #ea729e;">Sep 25 SAT</span>&nbsp;
+      <span style="color: #ffffff;">|</span>&nbsp; 
+      <span style="color: #26a69a;">5:00 pm</span> &nbsp;
+      <br>
+      <span style="color: #f0a73b;">VUE 8 Function Room</span>
+    </p>
+    <p class="subtitle">讓我們一起「登陸」月球探險！<br>Let's "Land" on the Moon & Explore!</p>
+    <p class="desc">歡迎來到這場趣味挑戰、創意手作與奇幻故事的專屬派對<br>Welcome to an exclusive party of fun challenges, DIY creativity, and enchanting tales.</p>
+  </div>
+  
+  <!-- Event Info -->
+  <div class="section-header">
+  <div class="section-title">活動說明 | EVENT INFO</div>
+  </div>
+  
+  <!-- Crafts Cards -->
+  <div class="crafts-container">
+    <div class="craft-card">
+      <div class="card-header header-1">趣味遊戲<br>Fun Games</div>
+      <div class="card-img-placeholder" style="background: url('web-1.jpg') center/cover;"></div>
+    </div>
+    <div class="craft-card">
+      <div class="card-header header-2">月餅皂DIY<br>Mooncake Soap DIY</div>
+      <div class="card-img-placeholder" style="background: url('web-2.jpg') center/cover;"></div>
+    </div>
+    <div class="craft-card">
+      <div class="card-header header-3">故事分享<br>Storytelling</div>
+      <div class="card-img-placeholder" style="background: url('web-3.jpg') center/cover;"></div>
+    </div>
+    <div class="craft-card">
+      <div class="card-header header-4">提燈夜遊<br>Lantern Night Tour</div>
+      <div class="card-img-placeholder" style="background: url('web-4.jpg') center/cover;"></div>
+    </div>
+  </div>
+  <div class="info-grid">
+    <div class="info-item">
+      <h4>報名費8元 Only $8!</h4>
+      <small>名額有限，請盡早報名<br>Join at our surprise price — sign up now!</small>
+    </div>
+    <div class="info-item">
+      <h4>親子同樂 Family Fun</h4>
+      <small>動態遊戲、 靜態手作，聽故事放鬆<br>Active games, calming crafts, and relaxing storytime.</small>
+    </div>
+    <div class="info-item">
+      <h4>神秘小禮 Secret Surprise</h4>
+      <small>活動結束，有神秘小禮帶回家！<br>A little secret gift is waiting for you to bring home!</small>
+    </div>
+  </div>
+
+  <!-- Event Schedule -->
+  <div class="section-header">
+  <div class="section-title">活動流程 | EVENT SCHEDULE</div>
+  </div>
+  
+  <div class="schedule-grid">
+    <!-- 活動一 -->
+    <div class="schedule-group group-1">
+      <div class="schedule-title-card">動感廣寒宮<span class="schedule-title-en">Dynamic Moon Palace</span></div>
+      <div class="schedule-card">
+        <div class="time">05:00</div>
+        <div class="activity">活動報到</div>
+        <div class="en">Check-in</div>
+        <div class="time">05:00–05:20</div>
+        <div class="activity">登月探險家</div>
+        <div class="en">Lunar Explorers</div>
+        <div class="time">05:20–05:40</div>
+        <div class="activity">月球引力大挑戰</div>
+        <div class="en">Lunar Gravity Challenge</div>
+      </div>
+    </div>
+    <!-- 活動二 -->
+    <div class="schedule-group group-2">
+      <div class="schedule-title-card">玉兔的月餅工坊<span class="schedule-title-en">Jade Rabbit's Mooncake Workshop</span></div>
+      <div class="schedule-card">
+        <div class="time">05:40</div>
+        <div class="activity">領材料</div>
+        <div class="en">Pick Up Materials</div>
+        <div class="time">05:40–06:00</div>
+        <div class="activity">祈福月餅皂捏捏樂</div>
+        <div class="en">Mooncake Soap Molding Fun</div>
+        <div class="time">06:00–07:00</div>
+        <div class="activity">中秋美味派對</div>
+        <div class="en">Dinner Time</div>
+      </div>
+    </div>
+    <!-- 活動三 -->
+    <div class="schedule-group group-3">
+      <div class="schedule-title-card">月光故事屋<span class="schedule-title-en">Moonlight Storyhouse</span></div>
+      <div class="schedule-card">
+        <div class="time">07:00–07:20</div>
+        <div class="activity">穿越時空的傳說：月亮上的秘密</div>
+        <div class="en">Legends Through Time: Secrets of the Moon</div>
+        <div class="time">07:20–07:40</div>
+        <div class="activity">月球人口普查大解密！</div>
+        <div class="en">Lunar Census: The Great Reveal!</div>
+      </div>
+    </div>
+    <!-- 活動四 -->
+    <div class="schedule-group group-4">
+      <div class="schedule-title-card">登月巡航隊<span class="schedule-title-en">Lunar Patrol Squad</span></div>
+      <div class="schedule-card">
+        <div class="time">07:40–08:00</div>
+        <div class="activity">提燈賞月：點亮星河夜遊</div>
+        <div class="en">Lighting Up the Galaxy Lantern Tour</div>
+        <div class="time">08:00</div>
+        <div class="activity">返航：告別廣寒宮</div>
+        <div class="en">Farewell to the Moon Palace</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 報名表單區塊 -->
+  <div class="section-header">
+    <h1 class="section-title">報名表單┃SIGN UP</h1>
+    <hr class="divider">
+  </div>
+  
+  <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdqSG75PAKcAVrVgg8mqJgqRAatIgbDQjkctAjq60HCflNaBg/formResponse" method="POST" target="_blank" class="signup-form">
+    
+    <label for="child-name">小孩姓名 Child's name:</label>
+    <input type="text" id="child-name" name="entry.781115170" required placeholder="請輸入小孩姓名">
+    
+    <label for="email">電子郵件 Email:</label>
+    <input type="email" id="email" name="entry.855090447" required placeholder="請輸入Email">
+    
+    <label for="phone-number">手機號碼 Phone number:</label>
+    <input type="tel" id="phone-number" name="entry.1518588966" required placeholder="請輸入手機號碼">
+    
+    <div class="qr-container">
+      <img src="MyQR.jpg" alt="QR Code" width="130" height="130">
+      <div class="fee-text">Fee: $8 SGD</div>
+    </div>
+    
+    <button type="submit">Submit</button>
+  </form>
+
+</div>
+
+</body>
+<footer class="site-footer">
+  <div class="footer-content">
+    <p>© A Moonward Adventure 中秋童樂會：奔月奇遇記 2026</p>
+    <p>聯絡信箱：peiyidesign@gmail.com</p>
+  </div>
+</footer>
+</html>
