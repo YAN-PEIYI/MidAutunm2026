@@ -337,6 +337,8 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    position: relative; /* 確保遮罩能相對定位在表單內 */
+    overflow: hidden;   /* 讓遮罩圓角與表單一致 */
   }
 
   .signup-form label {
@@ -401,6 +403,37 @@
   .signup-form button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* 報名截止遮罩視窗 */
+  .form-closed-overlay {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85); /* 半透明白色背景 */
+    backdrop-filter: blur(4px); /* 背景模糊效果 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    border-radius: 16px;
+  }
+
+  .form-closed-overlay h2 {
+    color: #ea729e;
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+    font-family: "Gen Jyuu Gothic", "Noto Sans TC", sans-serif;
+  }
+
+  .form-closed-overlay p {
+    color: #5b54b6;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
   }
 
 </style>
@@ -595,6 +628,12 @@
   
   <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdqSG75PAKcAVrVgg8mqJgqRAatIgbDQjkctAjq60HCflNaBg/formResponse" method="POST" target="_blank" class="signup-form">
     
+    <!-- 新增的額滿截止視窗遮罩 -->
+    <div class="form-closed-overlay">
+      <h2>報名額滿截止</h2>
+      <p>Registration has closed</p>
+    </div>
+    
     <label for="child-name">小孩姓名 Child's name:</label>
     <input type="text" id="child-name" name="entry.781115170" required placeholder="請輸入小孩姓名">
     
@@ -609,7 +648,7 @@
       <div class="fee-text">Fee: $8 SGD</div>
     </div>
     
-    <button type="submit">Submit</button>
+    <button type="button">Submit</button>
   </form>
 
 </div>
